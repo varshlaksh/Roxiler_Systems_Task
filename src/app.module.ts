@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/user.entity';
+import { Store } from './stores/store.entity';
+import { Rating } from './ratings/rating.entity';
 
 @Module({
   imports: [
@@ -15,8 +18,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // auto-creates tables in dev, never in prod
+        entities: [User, Store, Rating],
+        synchronize: true,
       }),
     }),
   ],
