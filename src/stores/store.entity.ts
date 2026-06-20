@@ -1,11 +1,10 @@
+
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-  CreateDateColumn,
+  Entity, PrimaryGeneratedColumn, Column,
+  OneToMany, ManyToOne, JoinColumn, CreateDateColumn,
 } from 'typeorm';
 import { Rating } from '../ratings/rating.entity';
+import { User } from '../users/user.entity';
 
 @Entity('stores')
 export class Store {
@@ -20,6 +19,10 @@ export class Store {
 
   @Column({ length: 400 })
   address: string;
+
+  @ManyToOne(() => User, { nullable: true, eager: false })
+  @JoinColumn({ name: 'owner_id' })
+  owner: User;
 
   @OneToMany(() => Rating, (r) => r.store)
   ratingsReceived: Rating[];
