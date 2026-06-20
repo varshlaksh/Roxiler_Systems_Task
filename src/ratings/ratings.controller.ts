@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RatingsService } from './ratings.service';
-import { IsInt, Max, Min } from 'class-validator';
+import { IsInt, IsUUID, Max, Min } from 'class-validator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 
@@ -15,6 +15,7 @@ class SubmitRatingDto {
   @Max(5)
   value: number;
 
+  @IsUUID()
   storeId: string;
 }
 
