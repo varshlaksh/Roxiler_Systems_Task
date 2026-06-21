@@ -68,6 +68,7 @@ export default function StoreDirectory() {
         <tbody>
           {stores.map((s) => {
             const data = ratingsMap[s.id] || {};
+            const currentValue = data.mine?.value ? String(data.mine.value) : '';
             return (
               <tr key={s.id}>
                 <td>{s.name}</td>
@@ -76,14 +77,14 @@ export default function StoreDirectory() {
                 <td>{data.mine?.value ?? 'Not rated'}</td>
                 <td>
                   <select
-                    defaultValue=""
+                    value={currentValue}
                     onChange={(e) => {
                       if (!e.target.value) return;
                       if (data.mine) updateRating(data.mine.id, s.id, e.target.value);
                       else submitRating(s.id, e.target.value);
                     }}
                   >
-                    <option value="" disabled>{data.mine ? 'Update' : 'Rate'}</option>
+                    <option value="" disabled>{data.mine ? 'Update rating' : 'Rate this store'}</option>
                     {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </td>
