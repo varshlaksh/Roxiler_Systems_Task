@@ -7,7 +7,8 @@ export default function StoresList() {
   const [sortBy, setSortBy] = useState('createdAt');
   const [order, setOrder] = useState('ASC');
 
-  const [newStore, setNewStore] = useState({ name: '', email: '', address: '' });
+  const [storeOwners, setStoreOwners] = useState([]);
+  const [newStore, setNewStore] = useState({ name: '', email: '', address: '', ownerId: '' });
   const [error, setError] = useState('');
 
   const fetchStores = async () => {
@@ -16,7 +17,12 @@ export default function StoresList() {
     setStores(res.data);
   };
 
-  useEffect(() => { fetchStores(); }, [sortBy, order]);
+  const fetchStoreOwners = async () => {
+    const res = await apiClient.get('/users/store-owners/list');
+    setStoreOwners(res.data);
+  };
+
+  useEffect(() => { fetchStores(); fetchStoreOwners(); }, [sortBy, order]);
 
   const toggleSort = (column) => {
     if (sortBy === column) setOrder(order === 'ASC' ? 'DESC' : 'ASC');
@@ -27,8 +33,10 @@ export default function StoresList() {
     e.preventDefault();
     setError('');
     try {
-      await apiClient.post('/stores', newStore);
-      setNewStore({ name: '', email: '', address: '' });
+      const payload = { ...newStore };
+      if (!payload.ownerId) delete payload.ownerId;
+      await apiClient.post('/stores', payload);
+      setNewStore({ name: '', email: '', address: '', ownerId: '' });
       fetchStores();
     } catch (err) {
       const msg = err.response?.data?.message;
@@ -70,6 +78,12 @@ export default function StoresList() {
         <input placeholder="Store name (20-60 chars)" value={newStore.name} onChange={(e) => setNewStore({ ...newStore, name: e.target.value })} required /><br />
         <input placeholder="Email" type="email" value={newStore.email} onChange={(e) => setNewStore({ ...newStore, email: e.target.value })} required /><br />
         <input placeholder="Address" value={newStore.address} onChange={(e) => setNewStore({ ...newStore, address: e.target.value })} required /><br />
+        <select value={newStore.ownerId} onChange={(e) => setNewStore({ ...newStore, ownerId: e.target.value })}>
+          <option value="">No owner assigned yet</option>
+          {storeOwners.map((o) => (
+            <option key={o.id} value={o.id}>{o.fullName} ({o.email})</option>
+          ))}
+        </select><br />
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit">Add Store</button>
       </form>
